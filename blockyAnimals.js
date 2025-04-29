@@ -58,6 +58,9 @@ let g_lastFpsTime = performance.now();
 
 let g_waveAnimation = false;
 let g_waveAngle = 0;
+let g_pokeAnimation = false;
+let g_pokeTime = 0;
+let g_pokeRotation = 0;
 
 function syncSlidersToColor() {
     document.getElementById("redSlider").value = g_selectedColor[0] * 100;
@@ -151,7 +154,7 @@ document.getElementById("redSlider").addEventListener("mouseup", function() {
   document.getElementById("clear").onclick = function() {
     shapesList = [];
     g_drawScene = false; 
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // ✅ Instead of renderScene()
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  
   };
 
   document.getElementById("pointMode").onclick = function () {
@@ -234,6 +237,11 @@ function main() {
     g_lastX = ev.clientX;
     g_lastY = ev.clientY;
     g_dragging = true;
+  
+    if (ev.shiftKey) {
+      g_pokeAnimation = true;
+      g_pokeTime = 0;
+    }
   };
   
   canvas.onmouseup = function(ev) {
@@ -262,39 +270,38 @@ function main() {
 
 
 function updateAnimationAngles() {
-  if (g_yellowAnimation) {
-    g_yellowAngle = 45 * Math.sin(g_seconds); 
+  if (g_pokeAnimation) {
+    g_pokeRotation = 360 * Math.sin(g_pokeTime * (Math.PI / 4)); 
+    g_yellowAngle = 20 * Math.sin(g_pokeTime * 2); 
+    g_legAngle = 0;
+    g_waveAngle = 0;
+  } else {
+    if (g_yellowAnimation) {
+      g_yellowAngle = 45 * Math.sin(g_seconds); 
+    }
+    if (g_legAnimation) {
+      g_legAngle = 20 * Math.sin(g_seconds * 2); 
+    }
+    if (g_waveAnimation) {
+      g_waveAngle = 40 * Math.sin(g_seconds * 3) - 120;
+    }
   }
-  if (g_legAnimation) {
-    g_legAngle = 20 * Math.sin(g_seconds * 2); 
-  }
-  if (g_waveAnimation) {
-    g_waveAngle = 40 * Math.sin(g_seconds * 3) - 120;
-
-  }
-  
 }
 
 
-
 function tick() {
-  g_seconds = performance.now()/1000.0 - g_startTime;
+  g_seconds = performance.now() / 1000.0 - g_startTime;
+
+  if (g_pokeAnimation) {
+    g_pokeTime += 0.05; 
+    if (g_pokeTime > 2) { 
+      g_pokeAnimation = false;
+      g_pokeTime = 0;
+    }
+  }
 
   updateAnimationAngles();
   renderScene();
-
-  
-  g_frameCount++;
-
-  
-  let now = performance.now();
-  if (now - g_lastFpsTime >= 1000) {
-    g_fps = g_frameCount;
-    g_frameCount = 0;
-    g_lastFpsTime = now;
-    document.getElementById('fpsCounter').innerText = "FPS: " + g_fps;
-  }
-
   requestAnimationFrame(tick);
 }
 class Sphere {
@@ -350,16 +357,18 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   let globalRotMat = new Matrix4();
-  
- 
-  globalRotMat.rotate(gAnimalGlobalRotationX, 1, 0, 0); // up/down
-  globalRotMat.rotate(gAnimalGlobalRotationY, 0, 1, 0); // left/right
-  
-  
-  globalRotMat.rotate(gAnimalGlobalRotation, 0, 1, 0); 
+  globalRotMat.rotate(gAnimalGlobalRotationX, 1, 0, 0);
+  globalRotMat.rotate(gAnimalGlobalRotationY, 0, 1, 0);
+  globalRotMat.rotate(gAnimalGlobalRotation, 0, 1, 0);
 
+ 
+  if (g_pokeAnimation) {
+    globalRotMat.rotate(g_pokeRotation, 1, 0, 0); 
+  }
+
+  
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
- // --- Body ---
+
 let body = new Cube();
 body.color = [0.961, 0.145, 0.196, 1.0];
 body.matrix.translate(-0.125, -0.05, 0.0); 
@@ -471,7 +480,7 @@ calf.color = [1.0, 0.855, 0.631, 1.0];
 calf.matrix.set(thigh.matrix);
 calf.matrix.translate(0, -1.0, 0.0);
 
-// 👇 Calf bends a little when walking
+
 if (g_legAnimation) {
   calf.matrix.rotate(g_legAngle / 2, 1, 0, 0);
 } else {
@@ -588,41 +597,56 @@ function click(ev) {
     }
   
     render() {
-      gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-      
-      drawCube(); 
+      drawCube(this.color);
     }
   }
   
   
-  function drawCube() {
-    const s = 0.5; 
-    
-    // Front face
+  function drawCube(color = [1, 1, 1, 1]) {
+    const s = 0.5;
+  
+    let baseR = color[0];
+    let baseG = color[1];
+    let baseB = color[2];
+    let baseA = color[3];
+  
+    // Front face (normal color)
+    gl.uniform4f(u_FragColor, baseR, baseG, baseB, baseA);
     drawTriangle3D([-s, -s,  s], [ s, -s,  s], [-s,  s,  s]);
     drawTriangle3D([-s,  s,  s], [ s, -s,  s], [ s,  s,  s]);
   
-    // Back face
+    // Back face (slightly darker)
+    let shade = 0.9;
+    gl.uniform4f(u_FragColor, baseR * shade, baseG * shade, baseB * shade, baseA);
     drawTriangle3D([-s, -s, -s], [-s,  s, -s], [ s, -s, -s]);
     drawTriangle3D([ s, -s, -s], [-s,  s, -s], [ s,  s, -s]);
   
-    // Top face
+    // Top face (lighter)
+    shade = 1.1;
+    gl.uniform4f(u_FragColor, Math.min(baseR * shade,1.0), Math.min(baseG * shade,1.0), Math.min(baseB * shade,1.0), baseA);
     drawTriangle3D([-s,  s, -s], [-s,  s,  s], [ s,  s, -s]);
     drawTriangle3D([ s,  s, -s], [-s,  s,  s], [ s,  s,  s]);
   
-    // Bottom face
+    // Bottom face (darker)
+    shade = 0.7;
+    gl.uniform4f(u_FragColor, baseR * shade, baseG * shade, baseB * shade, baseA);
     drawTriangle3D([-s, -s, -s], [ s, -s, -s], [-s, -s,  s]);
     drawTriangle3D([-s, -s,  s], [ s, -s, -s], [ s, -s,  s]);
   
-    // Right face
+    // Right face (medium dark)
+    shade = 0.85;
+    gl.uniform4f(u_FragColor, baseR * shade, baseG * shade, baseB * shade, baseA);
     drawTriangle3D([ s, -s, -s], [ s,  s, -s], [ s, -s,  s]);
     drawTriangle3D([ s, -s,  s], [ s,  s, -s], [ s,  s,  s]);
   
-    // Left face
+    // Left face (medium dark)
+    shade = 0.85;
+    gl.uniform4f(u_FragColor, baseR * shade, baseG * shade, baseB * shade, baseA);
     drawTriangle3D([-s, -s, -s], [-s, -s,  s], [-s,  s, -s]);
     drawTriangle3D([-s, -s,  s], [-s,  s,  s], [-s,  s, -s]);
   }
+  
   
   
   
