@@ -382,8 +382,8 @@ function renderScene() {
 
 let body = new Cube();
 body.color = [0.961, 0.145, 0.196, 1.0];
-body.matrix.translate(-0.125, -0.05, 0.0); 
-body.matrix.scale(0.3, 0.5, 0.3);        
+body.matrix.translate(-0.125, 0, 0.0); 
+body.matrix.scale(0.3, 0.45, 0.3);        
 body.render();
 
 // --- Head ---
@@ -482,7 +482,7 @@ if (g_legAnimation) {
 } else {
   thigh.matrix.rotate(g_thighAngle, 1, 0, 0);
 }
-thigh.matrix.scale(0.1, 0.3, 0.1);
+thigh.matrix.scale(0.1, 0.25, 0.1);
 thigh.render();
 
 // --- Left Calf ---
@@ -530,7 +530,7 @@ if (g_legAnimation) {
   rightThigh.matrix.rotate(-g_thighAngle, 1, 0, 0);
 }
 
-rightThigh.matrix.scale(0.1, 0.3, 0.1);
+rightThigh.matrix.scale(0.1, 0.25, 0.1);
 rightThigh.render();
 
 // --- Right Calf ---
