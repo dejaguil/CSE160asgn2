@@ -302,7 +302,18 @@ function tick() {
 
   updateAnimationAngles();
   renderScene();
-  requestAnimationFrame(tick);
+
+  
+  g_frameCount++;
+  let now = performance.now();
+  if (now - g_lastFpsTime >= 1000) { 
+    g_fps = g_frameCount;
+    g_frameCount = 0;
+    g_lastFpsTime = now;
+    document.getElementById('fpsCounter').innerText = "FPS: " + g_fps;
+  }
+
+  requestAnimationFrame(tick); 
 }
 class Sphere {
   constructor() {
