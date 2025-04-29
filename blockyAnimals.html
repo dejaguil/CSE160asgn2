@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Change a point color</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    img.decor {
+      margin-top: 20px;
+      width: 300px;
+    }
+  </style>
+</head>
+
+<body onload="main()">
+ 
+  <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+  </canvas>
+
+ 
+  <div class="controls">
+    <button type="button" id="clear">X</button>
+    <button type="button" id="pointMode">X</button>
+    <button type="button" id="triangleMode">X</button>
+    <button type="button" id="circleMode">X</button>
+    <button type="button" id="cubeMode">X</button>
+
+    <br><br>
+
+    <label for="segmentSlider">X</label>
+    <input type="range" id="segmentSlider" min="3" max="60" value="20">
+    <br><br>
+
+    <button type="button" id="white">X</button>
+    <br><br>
+
+    <label for="redSlider">X</label>
+    <input type="range" id="redSlider" class="colorSlider" min="0" max="100" value="100"><br>
+
+    <label for="greenSlider">X</label>
+    <input type="range" id="greenSlider" class="colorSlider" min="0" max="100" value="0"><br>
+
+    <label for="blueSlider">X</label>
+    <input type="range" id="blueSlider" class="colorSlider" min="0" max="100" value="0"><br><br>
+
+    <label for="sizeSlider">X</label>
+    <input type="range" id="sizeSlider" class="sizeSlider" min="1" max="40" value="10">
+    <br>
+    <label for="angleSlider">Rotate Animal</label>
+    <input type="range" id="angleSlider" min="0" max="360" value="0">
+    <br>
+    <label>Upper Arm Angle:</label>
+    <input type="range" id="upperArmSlider" min="-90" max="90" value="0">
+    <br>
+    <label>Lower Arm Angle:</label>
+    <input type="range" id="lowerArmSlider" min="-90" max="90" value="0">
+    <br>
+    <label for="thighSlider">Thigh Angle:</label>
+    <input type="range" id="thighSlider" min="-90" max="90" value="0">
+    <br>
+    
+    <label for="calfSlider">Calf Angle:</label>
+    <input type="range" id="calfSlider" min="-90" max="90" value="0">
+    <br>
+    
+    <label for="footSlider">Foot Angle:</label>
+    <input type="range" id="footSlider" min="-45" max="45" value="0">
+    <br><br>
+    <button id="legOn">Walk Leg ON</button>
+    <button id="legOff">Walk Leg OFF</button>
+    <br><br>
+    <button id="waveOn">Wave On</button>
+    <button id="waveOff">Wave Off</button>
+    <br><br>
+    <button id="yellowOn">Rotate Head ON</button>
+    <button id="yellowOff">Rotate Head OFF</button>
+    <br><br>  
+  </div>
+  <p id="fpsCounter">FPS: </p>
+
+  <img src="rainbow.png" alt="Decorative PNG" class="decor">
+
+ 
+  <script src="lib/webgl-utils.js"></script>
+  <script src="lib/webgl-debug.js"></script>
+  <script src="lib/cuon-utils.js"></script>
+  <script src="lib/cuon-matrix.js"></script>    
+  <script src="blockyAnimals.js"></script>
+</body>
+</html>
