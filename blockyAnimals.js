@@ -293,8 +293,8 @@ function tick() {
   g_seconds = performance.now() / 1000.0 - g_startTime;
 
   if (g_pokeAnimation) {
-    g_pokeTime += 0.05; 
-    if (g_pokeTime > 2) { 
+    g_pokeTime += 0.02;
+    if (g_pokeTime > 2) {
       g_pokeAnimation = false;
       g_pokeTime = 0;
     }
@@ -303,17 +303,21 @@ function tick() {
   updateAnimationAngles();
   renderScene();
 
-  
+ 
   g_frameCount++;
   let now = performance.now();
-  if (now - g_lastFpsTime >= 1000) { 
+  if (now - g_lastFpsTime >= 1000) {
     g_fps = g_frameCount;
     g_frameCount = 0;
     g_lastFpsTime = now;
-    document.getElementById('fpsCounter').innerText = "FPS: " + g_fps;
+
+    let fpsCounter = document.getElementById('fpsCounter');
+    if (fpsCounter) {    
+      fpsCounter.innerText = "FPS: " + g_fps;
+    }
   }
 
-  requestAnimationFrame(tick); 
+  requestAnimationFrame(tick);
 }
 class Sphere {
   constructor() {
