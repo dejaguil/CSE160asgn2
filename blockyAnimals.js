@@ -75,7 +75,7 @@ function setupWebGL() {
     return;
   }
 
-  gl.enable(gl.DEPTH_TEST);  // ✅ Now here, after gl is valid
+  gl.enable(gl.DEPTH_TEST); 
 }
 
 
@@ -174,7 +174,7 @@ document.getElementById("redSlider").addEventListener("mouseup", function() {
 
   document.getElementById("angleSlider").addEventListener("input", function() {
     gAnimalGlobalRotation = this.value;
-    renderScene();  // ✅ Redraw the whole scene
+    renderScene(); 
   });
   document.getElementById("upperArmSlider").addEventListener("input", function() {
     g_upperArmAngle = this.value;
@@ -266,7 +266,7 @@ function updateAnimationAngles() {
     g_yellowAngle = 45 * Math.sin(g_seconds); 
   }
   if (g_legAnimation) {
-    g_legAngle = 20 * Math.sin(g_seconds * 2); // ⬅️ faster "walking" animation
+    g_legAngle = 20 * Math.sin(g_seconds * 2); 
   }
   if (g_waveAnimation) {
     g_waveAngle = 40 * Math.sin(g_seconds * 3) - 120;
@@ -283,10 +283,10 @@ function tick() {
   updateAnimationAngles();
   renderScene();
 
-  // Count frames
+  
   g_frameCount++;
 
-  // Update FPS every second
+  
   let now = performance.now();
   if (now - g_lastFpsTime >= 1000) {
     g_fps = g_frameCount;
@@ -301,14 +301,14 @@ class Sphere {
   constructor() {
     this.color = [1.0, 1.0, 1.0, 1.0];
     this.matrix = new Matrix4();
-    this.segments = 20;  // More segments = smoother sphere
+    this.segments = 20; 
   }
 
   render() {
     gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
     gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-    // Draw a sphere shape using many triangles
+    
     let step = 360 / this.segments;
     for (let lat = -90; lat < 90; lat += step) {
       for (let lon = 0; lon < 360; lon += step) {
@@ -336,8 +336,8 @@ class Sphere {
 
 
 function convertCoordinates (ev) {
-  var x = ev.clientX; // x coordinate of a mouse pointer
-  var y = ev.clientY; // y coordinate of a mouse pointer
+  var x = ev.clientX; 
+  var y = ev.clientY; 
   var rect = ev.target.getBoundingClientRect();
 
   x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
@@ -351,24 +351,24 @@ function renderScene() {
 
   let globalRotMat = new Matrix4();
   
-  // Apply mouse drag rotations first
+ 
   globalRotMat.rotate(gAnimalGlobalRotationX, 1, 0, 0); // up/down
   globalRotMat.rotate(gAnimalGlobalRotationY, 0, 1, 0); // left/right
   
-  // ✅ Then apply slider rotation separately (around Y-axis)
+  
   globalRotMat.rotate(gAnimalGlobalRotation, 0, 1, 0); 
 
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
  // --- Body ---
 let body = new Cube();
 body.color = [0.961, 0.145, 0.196, 1.0];
-body.matrix.translate(-0.125, -0.05, 0.0);  // Slight shift to left, more centered ✅
-body.matrix.scale(0.3, 0.5, 0.3);        // Good torso size
+body.matrix.translate(-0.125, -0.05, 0.0); 
+body.matrix.scale(0.3, 0.5, 0.3);        
 body.render();
 
 // --- Head ---
 let head = new Cube();
-head.color = [1.0, 0.855, 0.631, 1.0]; // Light bear yellow
+head.color = [1.0, 0.855, 0.631, 1.0]; 
 head.matrix.translate(-0.12, 0.4, 0.0);
 head.matrix.rotate(g_yellowAngle, 0, 1, 0);
 head.matrix.scale(0.3, 0.3, 0.3);
@@ -376,47 +376,47 @@ head.render();
 
 // --- Nose ---
 let nose = new Sphere();
-nose.color = [0.0, 0.0, 0.0, 1.0];  // Black
-nose.matrix.set(head.matrix);      // Follow the head's rotation
-nose.matrix.translate(0, -0.15, 0.5); // Move forward
-nose.matrix.scale(0.1, 0.1, 0.1);      // Smaller sphere
+nose.color = [0.0, 0.0, 0.0, 1.0];  
+nose.matrix.set(head.matrix);      
+nose.matrix.translate(0, -0.15, 0.5); 
+nose.matrix.scale(0.1, 0.1, 0.1);      
 nose.render();
 
 // --- Left Eye ---
 let leftEye = new Cube();
-leftEye.color = [0.0, 0.0, 0.0, 1.0]; // Black
-leftEye.matrix.set(head.matrix);      // Start from head
-leftEye.matrix.translate(-0.15, 0.1, 0.5);  // Left side, up a little, forward
-leftEye.matrix.scale(0.08, 0.2, 0.08);     // Smaller than nose
+leftEye.color = [0.0, 0.0, 0.0, 1.0]; 
+leftEye.matrix.set(head.matrix);      
+leftEye.matrix.translate(-0.15, 0.1, 0.5);  
+leftEye.matrix.scale(0.08, 0.2, 0.08);     
 leftEye.render();
 
 // --- Right Eye ---
 let rightEye = new Cube();
-rightEye.color = [0.0, 0.0, 0.0, 1.0]; // Black
-rightEye.matrix.set(head.matrix);      // Start from head
-rightEye.matrix.translate(0.15, 0.1, 0.5);   // Right side, up a little, forward
+rightEye.color = [0.0, 0.0, 0.0, 1.0];
+rightEye.matrix.set(head.matrix);      
+rightEye.matrix.translate(0.15, 0.1, 0.5);  
 rightEye.matrix.scale(0.08, 0.2, 0.08);
 rightEye.render();
 
 // --- Left Ear ---
 let leftEar = new Cube();
-leftEar.color = [1.0, 0.855, 0.631, 1.0]; // Same yellow
-leftEar.matrix.set(head.matrix); // 🟰 Start from head's matrix
-leftEar.matrix.translate(-0.6, 0.7, 0.0);  // Relative to head center
+leftEar.color = [1.0, 0.855, 0.631, 1.0]; 
+leftEar.matrix.set(head.matrix); 
+leftEar.matrix.translate(-0.6, 0.7, 0.0); 
 leftEar.matrix.scale(0.3, 0.3, 0.3);
 leftEar.render();
 
 // --- Right Ear ---
 let rightEar = new Cube();
-rightEar.color = [1.0, 0.855, 0.631, 1.0]; // Same yellow
-rightEar.matrix.set(head.matrix); // 🟰 Start from head's matrix
-rightEar.matrix.translate(0.6, 0.7, 0.0);   // Relative to head center
+rightEar.color = [1.0, 0.855, 0.631, 1.0]; 
+rightEar.matrix.set(head.matrix); 
+rightEar.matrix.translate(0.6, 0.7, 0.0);   
 rightEar.matrix.scale(0.3, 0.3, 0.3);
 rightEar.render();
   // --- Left Upper Arm ---
   let leftUpperArm = new Cube();
   leftUpperArm.color = [0.961, 0.145, 0.196, 1.0];
-  leftUpperArm.matrix.setTranslate(-0.35, 0.25, 0.0);  // Farther left ✅
+  leftUpperArm.matrix.setTranslate(-0.35, 0.25, 0.0);  
   leftUpperArm.matrix.rotate(g_waveAnimation ? g_waveAngle : g_upperArmAngle, 0, 0, 1);
   leftUpperArm.matrix.translate(0, -0.25, 0.0);
   leftUpperArm.matrix.scale(0.1, 0.5, 0.1);
@@ -435,8 +435,8 @@ rightEar.render();
   // --- Right Upper Arm ---
   let rightUpperArm = new Cube();
   rightUpperArm.color = [0.961, 0.145, 0.196, 1.0];
-  rightUpperArm.matrix.setTranslate(0.2, 0.25, 0.0);   // Farther right ✅
-  rightUpperArm.matrix.rotate(-g_upperArmAngle, 0, 0, 1);  // Negative rotation for opposite arm
+  rightUpperArm.matrix.setTranslate(0.2, 0.25, 0.0);   
+  rightUpperArm.matrix.rotate(-g_upperArmAngle, 0, 0, 1);  
   rightUpperArm.matrix.translate(-.10, -0.25, 0.0);
   rightUpperArm.matrix.scale(0.1, 0.5, 0.1);
   rightUpperArm.render();
@@ -446,7 +446,7 @@ rightEar.render();
   rightLowerArm.color = [1.0, 0.855, 0.631, 1.0];
   rightLowerArm.matrix.set(rightUpperArm.matrix);
   rightLowerArm.matrix.translate(0, -0.5, 0.0);
-  rightLowerArm.matrix.rotate(-g_lowerArmAngle, 0, 0, 1);  // Negative to match right side
+  rightLowerArm.matrix.rotate(-g_lowerArmAngle, 0, 0, 1);  
   rightLowerArm.matrix.translate(0, -0.25, 0.0);
   rightLowerArm.matrix.scale(1, .5, 1);
   rightLowerArm.render();
@@ -456,7 +456,7 @@ let thigh = new Cube();
 thigh.color = [1.0, 0.855, 0.631, 1.0];
 thigh.matrix.setTranslate(-0.25, -0.3, 0.0);
 
-// 👇 If animating, use g_legAngle
+
 if (g_legAnimation) {
   thigh.matrix.rotate(g_legAngle, 1, 0, 0);
 } else {
@@ -487,7 +487,7 @@ foot.color = [1.0, 0.855, 0.631, 1.0];
 foot.matrix.set(calf.matrix);
 foot.matrix.translate(0, -1.2, 0.0);
 
-// 👇 Foot might tilt slightly
+
 if (g_legAnimation) {
   foot.matrix.rotate(g_legAngle / 4, 1, 0, 0);
 } else {
@@ -503,7 +503,7 @@ let rightThigh = new Cube();
 rightThigh.color = [1.0, 0.855, 0.631, 1.0];
 rightThigh.matrix.setTranslate(0.00, -0.3, 0.0);
 
-// 👇 If animating, move opposite to left leg
+
 if (g_legAnimation) {
   rightThigh.matrix.rotate(-g_legAngle, 1, 0, 0);
 } else {
@@ -519,9 +519,9 @@ rightCalf.color = [1.0, 0.855, 0.631, 1.0];
 rightCalf.matrix.set(rightThigh.matrix);
 rightCalf.matrix.translate(0, -1.0, 0.0);
 
-// 👇 Bend calf based on animation
+
 if (g_legAnimation) {
-  rightCalf.matrix.rotate(-g_legAngle / 2, 1, 0, 0); // opposite bend
+  rightCalf.matrix.rotate(-g_legAngle / 2, 1, 0, 0); 
 } else {
   rightCalf.matrix.rotate(-g_calfAngle, 1, 0, 0);
 }
@@ -535,9 +535,9 @@ rightFoot.color = [1.0, 0.855, 0.631, 1.0];
 rightFoot.matrix.set(rightCalf.matrix);
 rightFoot.matrix.translate(0, -1.0, 0.0);
 
-// 👇 Foot tilt for walking
+
 if (g_legAnimation) {
-  rightFoot.matrix.rotate(-g_legAngle / 4, 1, 0, 0); // opposite tilt
+  rightFoot.matrix.rotate(-g_legAngle / 4, 1, 0, 0);
 } else {
   rightFoot.matrix.rotate(-g_footAngle, 1, 0, 0);
 }
@@ -569,12 +569,12 @@ function click(ev) {
       let newTriangle = new Triangle(vertices, g_selectedColor.slice());
       shapesList.push(newTriangle);
     } else if (g_shapeType === "circle") {
-        let radius = parseFloat(g_selectedSize) / 300; // smaller radius feels better
+        let radius = parseFloat(g_selectedSize) / 300; 
         let newCircle = new Circle([x, y], radius, g_selectedColor.slice(), g_segmentCount);
         shapesList.push(newCircle);
       }
       else if (g_shapeType === "cube") {
-        let newCube = new Cube(); // No parameters anymore
+        let newCube = new Cube(); 
         shapesList.push(newCube);
       }
       
@@ -583,7 +583,7 @@ function click(ev) {
   }
   class Cube {
     constructor() {
-      this.color = [1.0, 1.0, 1.0, 1.0]; // Default white
+      this.color = [1.0, 1.0, 1.0, 1.0]; 
       this.matrix = new Matrix4();
     }
   
@@ -591,13 +591,13 @@ function click(ev) {
       gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
       
-      drawCube(); // No parameter here, matrix already uploaded
+      drawCube(); 
     }
   }
   
   
   function drawCube() {
-    const s = 0.5; // scale factor to shrink the cube
+    const s = 0.5; 
     
     // Front face
     drawTriangle3D([-s, -s,  s], [ s, -s,  s], [-s,  s,  s]);
@@ -650,10 +650,10 @@ class Point {
     }
   
     render() {
-        // Disable buffer-based position
+        
         gl.disableVertexAttribArray(a_Position);
       
-        // Manually provide position
+        
         gl.vertexAttrib3f(a_Position, this.position[0], this.position[1], 0.0);
       
         gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
@@ -667,19 +667,19 @@ class Point {
       this.vertices = vertices;
       this.color = color;
   
-      // Create and store buffer once
+     
       this.vertexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
     }
   
     render() {
-        // Create and bind local buffer
+        
         let vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
       
-        // Enable buffer-based position input
+        
         gl.enableVertexAttribArray(a_Position);
         gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
       
@@ -687,7 +687,7 @@ class Point {
       
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       
-        // ❗ Clean up by disabling buffer-based mode so it doesn't affect the next shape
+        
         gl.disableVertexAttribArray(a_Position);
       }      
   }
